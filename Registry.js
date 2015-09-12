@@ -16,6 +16,7 @@ function Registry(namespace) {
         if (this.isSupported) {
             return false;
         }
+        
         var key = key + namespace;
         if (localStorage.getItem(key) !== null) {
             var expiresDate = localStorage.getItem(key + "&&expires");
@@ -31,9 +32,9 @@ function Registry(namespace) {
             }
             var value = window.localStorage.getItem(key);
             return JSON.parse(value);
-        } else {
-            return null;
         }
+        
+        return null;
     };
 
     /**
@@ -45,20 +46,23 @@ function Registry(namespace) {
      */
     this.set = function (key, value, expires) {
         if (this.isSupported) {
-            return;
+            return false;
         }
+        
         var expires = typeof expires === "undefined" ? 60000000000 : expires * 1000;
         var key = key + namespace;
         if (value === null) {
             localStorage.removeItem(key);
-        } else {
-            value = JSON.stringify(value);
-            localStorage.setItem(key, value);
-            var expiresTime = ((new Date()).getTime() + expires);
-            var expires = new Date();
-            expires.setTime(expiresTime);
-            localStorage.setItem(key + "&&expires", expires);
+            return true;
         }
+        
+        value = JSON.stringify(value);
+        localStorage.setItem(key, value);
+        var expiresTime = ((new Date()).getTime() + expires);
+        var expires = new Date();
+        expires.setTime(expiresTime);
+        localStorage.setItem(key + "&&expires", expires);
+        return true;
     };
     
     /**
@@ -70,8 +74,10 @@ function Registry(namespace) {
         if (this.isSupported) {
             return false;
         }
+        
         var key = key + namespace;
         localStorage.removeItem(key);
+        return true;
     };
     
     /**
@@ -82,6 +88,7 @@ function Registry(namespace) {
         if (this.isSupported) {
             return false;
         }
+        
         var keys = Object.keys(localStorage);
         for (var i = 0; i < keys.length; i++) {
             var key = keys[i];
@@ -89,5 +96,6 @@ function Registry(namespace) {
                 localStorage.removeItem(key);
             }
         }
+        return true;
     };
 }
